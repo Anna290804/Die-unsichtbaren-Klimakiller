@@ -15,7 +15,7 @@
     --light: #e8e4dc;
     --cream: #f2efe8;
     --red: #e84c1e;
-    --orange: #e84c1e;
+    --orange: #f07d23;
     --green: #4aad5a;
     --yellow: #f5c842;
     --accent: #e84c1e;
@@ -111,20 +111,42 @@
     font-weight: 500;
   }
 
-  .scroll-cta {
-    display: flex;
+  /* BUTTON INSTEAD OF TEXT LINK */
+  .scroll-cta-btn {
+    display: inline-flex;
     flex-direction: column;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
     font-family: 'Space Mono', monospace;
-    font-size: 10px;
+    font-size: 11px;
     letter-spacing: 0.15em;
     text-transform: uppercase;
-    color: var(--gray);
+    color: var(--cream);
+    text-decoration: none;
+    background: var(--coal);
+    border: 1px solid var(--ash);
+    padding: 16px 36px;
+    margin-top: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
     animation: bounce 2s infinite;
   }
 
-  .scroll-cta svg { color: var(--red); }
+  .scroll-cta-btn:hover {
+    background: var(--smoke);
+    border-color: var(--red);
+    color: var(--red);
+    animation-play-state: paused;
+  }
+
+  .scroll-cta-btn svg {
+    color: var(--red);
+    transition: transform 0.3s ease;
+  }
+
+  .scroll-cta-btn:hover svg {
+    transform: translateY(4px);
+  }
 
   @keyframes bounce {
     0%, 100% { transform: translateY(0); }
@@ -313,11 +335,11 @@
     justify-content: space-between;
     align-items: baseline;
     font-family: 'Space Mono', monospace;
-    font-size: 14px; /* Etwas größer für bessere Präsenz */
-    font-weight: 700; /* Deutlich fetter */
+    font-size: 14px;
+    font-weight: 700;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: var(--orange); /* Aufmerksamkeitsstarkes Orange */
+    color: var(--orange);
     margin-bottom: 4px;
   }
 
@@ -569,12 +591,6 @@
   /* ANIMATED NUMBER */
   .count-up { transition: all 0.3s ease; }
 
-  /* PULSE */
-  @keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.4; }
-  }
-
   /* GOOD VS BAD - RESPONSIVE CONTAINER & GRID */
   .comparison-table {
     display: grid;
@@ -622,7 +638,6 @@
   @media(max-width: 768px) {
     .comparison-grid { grid-template-columns: 1fr; }
     
-    /* Mobil stapeln wir die Spalten untereinander statt Spalten-Zellen zu mischen */
     .comparison-table {
       grid-template-columns: 1fr;
       gap: 32px;
@@ -630,7 +645,29 @@
   }
 
   @media(max-width: 600px) {
-    h1 { font-size: 64px; }
+    .hero {
+      padding: 48px 16px 40px; /* Reduziertes Padding für weniger Abstand oben */
+      min-height: 85vh; /* Verhindert übermäßige Höhe auf Mobilgeräten */
+    }
+
+    .hero-sub {
+      margin: 20px auto 32px;
+      font-size: 15px; /* Kompakter auf mobilen Screens */
+    }
+
+    h1 {
+      font-size: 52px; /* Bessere Lesbarkeit auf kleineren Bildschirmen */
+    }
+
+    .eyebrow {
+      margin-bottom: 16px;
+    }
+
+    .scroll-cta-btn {
+      padding: 12px 28px;
+      font-size: 10px;
+    }
+
     .result-value { font-size: 52px; }
   }
 </style>
@@ -653,12 +690,11 @@
     verursacht <strong>mehr CO₂ als die gesamte Luftfahrtindustrie</strong>. 
     Deine Website ist Teil des Problems.
   </p>
-  <div class="scroll-cta">
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <path d="M12 5v14M5 12l7 7 7-7"/>
-    </svg>
+  
+  <!-- INTERACTIVE CTA BUTTON -->
+  <a href="#kalkulator" class="scroll-cta-btn">
     berechne deinen schaden
-  </div>
+  </a>
 </div>
 
 <!-- STATS BAR -->
