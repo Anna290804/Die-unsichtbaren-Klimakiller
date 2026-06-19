@@ -1,0 +1,1110 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Die unsichtbaren Klimakiller.</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #0a0a0a;
+    --coal: #111111;
+    --smoke: #1c1c1c;
+    --ash: #2e2e2e;
+    --gray: #666;
+    --light: #e8e4dc;
+    --cream: #f2efe8;
+    --red: #e84c1e;
+    --orange: #e84c1e;
+    --green: #4aad5a;
+    --yellow: #f5c842;
+    --accent: #e84c1e;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--black);
+    color: var(--light);
+    font-family: 'DM Sans', sans-serif;
+    overflow-x: hidden;
+    cursor: crosshair;
+  }
+
+  /* SMOKE PARTICLE CANVAS */
+  #smokeCanvas {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.4;
+  }
+
+  /* HERO */
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 80px 24px 60px;
+    z-index: 1;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 80% 60% at 50% 40%, rgba(232,76,30,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .eyebrow {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--red);
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .eyebrow::before, .eyebrow::after {
+    content: '';
+    width: 40px;
+    height: 1px;
+    background: var(--red);
+  }
+
+  h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(72px, 14vw, 180px);
+    line-height: 0.88;
+    letter-spacing: -0.02em;
+    color: var(--cream);
+    margin-bottom: 8px;
+  }
+
+  h1 span {
+    color: var(--red);
+    display: block;
+  }
+
+  .hero-sub {
+    font-size: clamp(16px, 2.5vw, 22px);
+    color: var(--gray);
+    max-width: 600px;
+    line-height: 1.6;
+    margin: 32px auto 48px;
+    font-weight: 300;
+  }
+
+  .hero-sub strong {
+    color: var(--light);
+    font-weight: 500;
+  }
+
+  .scroll-cta {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--gray);
+    animation: bounce 2s infinite;
+  }
+
+  .scroll-cta svg { color: var(--red); }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(8px); }
+  }
+
+  /* STATS BAR */
+  .stats-bar {
+    position: relative;
+    z-index: 1;
+    background: var(--coal);
+    border-top: 1px solid var(--ash);
+    border-bottom: 1px solid var(--ash);
+    padding: 32px 0;
+    overflow: hidden;
+  }
+
+  .stats-bar::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--red), transparent);
+    animation: scanline 3s linear infinite;
+  }
+
+  @keyframes scanline {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+  }
+
+  .stats-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 24px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 32px;
+    text-align: center;
+  }
+
+  .stat-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 56px;
+    color: var(--red);
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+
+  .stat-label {
+    font-size: 13px;
+    color: var(--gray);
+    font-family: 'Space Mono', monospace;
+    letter-spacing: 0.05em;
+  }
+
+  /* SECTION */
+  section {
+    position: relative;
+    z-index: 1;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 80px 24px;
+  }
+
+  .section-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--red);
+    margin-bottom: 16px;
+  }
+
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(40px, 6vw, 72px);
+    line-height: 0.95;
+    color: var(--cream);
+    margin-bottom: 24px;
+  }
+
+  /* CULPRITS */
+  .culprits-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2px;
+    margin-top: 48px;
+    border: 2px solid var(--ash);
+  }
+
+  .culprit-card {
+    background: var(--coal);
+    padding: 36px 32px;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.3s;
+  }
+
+  .culprit-card:hover {
+    background: var(--smoke);
+  }
+
+  .culprit-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0;
+    height: 3px;
+    width: 0;
+    background: var(--red);
+    transition: width 0.4s ease;
+  }
+
+  .culprit-card:hover::after { width: 100%; }
+
+  .culprit-icon {
+    font-size: 32px;
+    margin-bottom: 16px;
+    display: block;
+    filter: grayscale(0.3);
+  }
+
+  .culprit-title {
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--cream);
+    letter-spacing: 0.05em;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+  }
+
+  .culprit-text {
+    font-size: 14px;
+    color: var(--gray);
+    line-height: 1.7;
+  }
+
+  .culprit-num {
+    position: absolute;
+    top: 24px; right: 24px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 64px;
+    color: var(--ash);
+    line-height: 1;
+    pointer-events: none;
+  }
+
+  /* CALCULATOR */
+  #kalkulator {
+    background: var(--coal);
+    border-top: 1px solid var(--ash);
+    border-bottom: 1px solid var(--ash);
+    max-width: 100%;
+    padding: 80px 24px;
+  }
+
+  #kalkulator .inner {
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .calc-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+    margin-top: 48px;
+  }
+
+  @media(max-width: 768px) {
+    .calc-grid { grid-template-columns: 1fr; }
+  }
+
+  .calc-form {}
+
+  .input-group {
+    margin-bottom: 32px;
+  }
+
+  .input-header {
+    margin-bottom: 12px;
+  }
+
+  .input-label {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-family: 'Space Mono', monospace;
+    font-size: 14px; /* Etwas größer für bessere Präsenz */
+    font-weight: 700; /* Deutlich fetter */
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--orange); /* Aufmerksamkeitsstarkes Orange */
+    margin-bottom: 4px;
+  }
+
+  .input-label span {
+    color: var(--red);
+    font-size: 16px;
+    font-weight: 700;
+  }
+
+  .input-subline {
+    font-size: 11px;
+    color: var(--gray);
+    font-family: 'DM Sans', sans-serif;
+    line-height: 1.4;
+    text-transform: none;
+    letter-spacing: normal;
+    font-weight: 400;
+  }
+
+  input[type="range"] {
+    width: 100%;
+    -webkit-appearance: none;
+    height: 4px;
+    background: var(--ash);
+    border-radius: 0;
+    outline: none;
+    cursor: pointer;
+  }
+
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    background: var(--red);
+    border-radius: 0;
+    cursor: pointer;
+    transition: transform 0.2s;
+  }
+
+  input[type="range"]::-webkit-slider-thumb:hover {
+    transform: scale(1.3);
+  }
+
+  .range-labels {
+    display: flex;
+    justify-content: space-between;
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    color: var(--ash);
+    letter-spacing: 0.05em;
+    margin-top: 6px;
+  }
+
+  /* RESULTS */
+  .calc-result {
+    background: var(--black);
+    border: 1px solid var(--ash);
+    padding: 36px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .calc-result::before {
+    content: '// OUTPUT';
+    position: absolute;
+    top: 16px; right: 20px;
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    color: var(--ash);
+  }
+
+  .result-main {
+    margin-bottom: 32px;
+  }
+
+  .result-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gray);
+    margin-bottom: 6px;
+  }
+
+  .result-value {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 72px;
+    line-height: 1;
+    color: var(--red);
+    transition: color 0.3s;
+  }
+
+  .result-unit {
+    font-family: 'Space Mono', monospace;
+    font-size: 14px;
+    color: var(--gray);
+    margin-top: 4px;
+  }
+
+  /* COMPARISON BOXES */
+  .comparison-headline {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 24px;
+    color: var(--cream);
+    margin-top: 32px;
+    margin-bottom: 16px;
+    letter-spacing: 0.05em;
+  }
+
+  .comparison-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .comp-box {
+    background: var(--coal);
+    border: 1px solid var(--ash);
+    padding: 20px 12px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.3s, border-color 0.3s;
+  }
+
+  .comp-box:hover {
+    background: var(--smoke);
+    border-color: var(--gray);
+  }
+
+  .comp-box-icon {
+    font-size: 26px;
+    margin-bottom: 8px;
+  }
+
+  .comp-box-value {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 32px;
+    color: var(--cream);
+    line-height: 1.1;
+    margin-bottom: 4px;
+  }
+
+  .comp-box-label {
+    font-size: 11px;
+    color: var(--gray);
+    font-family: 'Space Mono', monospace;
+    line-height: 1.3;
+  }
+
+  /* MANIFESTO */
+  .manifesto-section {
+    text-align: center;
+    padding: 100px 24px;
+  }
+
+  .manifesto-text {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(28px, 5vw, 52px);
+    line-height: 1.15;
+    max-width: 900px;
+    margin: 0 auto;
+    color: var(--cream);
+  }
+
+  .manifesto-text .highlight {
+    color: var(--red);
+    position: relative;
+  }
+
+  .manifesto-sub {
+    font-size: 16px;
+    color: var(--gray);
+    max-width: 600px;
+    margin: 32px auto 0;
+    line-height: 1.7;
+  }
+
+  /* CTA */
+  .cta-section {
+    background: var(--red);
+    padding: 80px 24px;
+    text-align: center;
+  }
+
+  .cta-section h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(48px, 8vw, 96px);
+    color: var(--black);
+    line-height: 0.9;
+    margin-bottom: 24px;
+  }
+
+  .cta-section p {
+    font-size: 18px;
+    color: rgba(0,0,0,0.7);
+    max-width: 500px;
+    margin: 0 auto 40px;
+  }
+
+  .cta-btn {
+    display: inline-block;
+    background: var(--black);
+    color: var(--cream);
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 18px 40px;
+    text-decoration: none;
+    border: 2px solid var(--black);
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+
+  .cta-btn:hover {
+    background: transparent;
+    color: var(--black);
+  }
+
+  /* FOOTER */
+  footer {
+    background: var(--black);
+    border-top: 1px solid var(--ash);
+    padding: 32px 24px;
+    text-align: center;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: var(--ash);
+    position: relative;
+    z-index: 1;
+  }
+
+  /* NOISE OVERLAY */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+    opacity: 0.025;
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  /* ANIMATED NUMBER */
+  .count-up { transition: all 0.3s ease; }
+
+  /* PULSE */
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  /* GOOD VS BAD - RESPONSIVE CONTAINER & GRID */
+  .comparison-table {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-top: 48px;
+  }
+
+  .ct-column {
+    display: flex;
+    flex-direction: column;
+    border: 2px solid var(--ash);
+  }
+
+  .ct-header {
+    background: var(--smoke);
+    padding: 20px 28px;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
+  .ct-header.bad { color: var(--red); border-bottom: 2px solid var(--red); }
+  .ct-header.good { color: var(--green); border-bottom: 2px solid var(--green); }
+
+  .ct-row {
+    background: var(--coal);
+    padding: 16px 28px;
+    font-size: 13px;
+    color: var(--gray);
+    line-height: 1.5;
+    border-bottom: 1px solid var(--ash);
+    flex-grow: 1;
+  }
+
+  .ct-row:last-child {
+    border-bottom: none;
+  }
+
+  .ct-row.bad { border-left: 3px solid rgba(232,76,30,0.3); }
+  .ct-row.good { border-left: 3px solid rgba(74,173,90,0.3); }
+
+  /* MEDIA QUERIES */
+  @media(max-width: 768px) {
+    .comparison-grid { grid-template-columns: 1fr; }
+    
+    /* Mobil stapeln wir die Spalten untereinander statt Spalten-Zellen zu mischen */
+    .comparison-table {
+      grid-template-columns: 1fr;
+      gap: 32px;
+    }
+  }
+
+  @media(max-width: 600px) {
+    h1 { font-size: 64px; }
+    .result-value { font-size: 52px; }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="smokeCanvas"></canvas>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="eyebrow">
+    Wie viel CO₂ wiegt deine Website?
+  </div>
+  <h1>
+    Die unsichtbaren
+    <span>Klimakiller</span>
+  </h1>
+  <p class="hero-sub">
+    Schlechte Struktur, aufgeblähter Code, lange Ladezeiten — das Internet 
+    verursacht <strong>mehr CO₂ als die gesamte Luftfahrtindustrie</strong>. 
+    Deine Website ist Teil des Problems.
+  </p>
+  <div class="scroll-cta">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M12 5v14M5 12l7 7 7-7"/>
+    </svg>
+    berechne deinen schaden
+  </div>
+</div>
+
+<!-- STATS BAR -->
+<div class="stats-bar">
+  <div class="stats-inner">
+    <div class="stat-item">
+      <div class="stat-num">3.8%</div>
+      <div class="stat-label">Globale CO₂-Emissionen durch Internet</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">1.76g</div>
+      <div class="stat-label">CO₂ pro Seitenaufruf (Durchschnitt)</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">4.1B</div>
+      <div class="stat-label">Internetnutzer weltweit</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">416</div>
+      <div class="stat-label">TWh Energieverbrauch Rechenzentren/Jahr</div>
+    </div>
+  </div>
+</div>
+
+<!-- CULPRITS -->
+<section>
+  <div class="section-label">// Die Täter</div>
+  <h2 class="section-title">Was deine<br>Website ausbremst</h2>
+  <p style="color:var(--gray); max-width:560px; font-size:15px; line-height:1.7;">
+    Jede dieser Schwachstellen erhöht den Energieverbrauch — und damit den CO₂-Ausstoß — deiner Website messbar.
+  </p>
+
+  <div class="culprits-grid">
+    <div class="culprit-card">
+      <span class="culprit-icon">🖼️</span>
+      <div class="culprit-num">01</div>
+      <div class="culprit-title">Unkomprimierte Bilder</div>
+      <p class="culprit-text">JPEGs ohne Optimierung, PNG statt WebP, fehlende Lazy Loading — Bilder machen 60–80% der Datenmenge aus und sind der größte Energiefresser.</p>
+    </div>
+    <div class="culprit-card">
+      <span class="culprit-icon">🧱</span>
+      <div class="culprit-num">02</div>
+      <div class="culprit-title">Schlechte Website-Struktur</div>
+      <p class="culprit-text">Unnötige DOM-Tiefe, redundante HTML-Elemente, fehlende Semantik — schlechter Code zwingt den Browser zu mehr Rechenarbeit und mehr Serveranfragen.</p>
+    </div>
+    <div class="culprit-card">
+      <span class="culprit-icon">🔍</span>
+      <div class="culprit-num">03</div>
+      <div class="culprit-title">Schlechtes SEO</div>
+      <p class="culprit-text">Fehlende Meta-Tags zwingen Crawler zu wiederholten Besuchen. Doppelte Inhalte, broken Links und fehlende Sitemaps verursachen unnötige Server-Anfragen.</p>
+    </div>
+    <div class="culprit-card">
+      <span class="culprit-icon">⏳</span>
+      <div class="culprit-num">04</div>
+      <div class="culprit-title">Lange Ladezeiten</div>
+      <p class="culprit-text">Jede Sekunde längere Ladezeit = mehr Serveranfragen, mehr Datentransfer, mehr Energie. Nutzer mit langsamen Verbindungen verbrauchen bis zu 10× mehr Energie.</p>
+    </div>
+    <div class="culprit-card">
+      <span class="culprit-icon">📦</span>
+      <div class="culprit-num">05</div>
+      <div class="culprit-title">Aufgeblähtes JavaScript</div>
+      <p class="culprit-text">Ungeminified JS, ungenutzte Libraries, kein Tree-Shaking — je mehr Code geladen und ausgeführt wird, desto mehr CPU, desto mehr Akku, desto mehr CO₂.</p>
+    </div>
+    <div class="culprit-card">
+      <span class="culprit-icon">🗄️</span>
+      <div class="culprit-num">06</div>
+      <div class="culprit-title">Kein Caching / CDN</div>
+      <p class="culprit-text">Ohne Caching wird jede Seite neu geladen. Ohne CDN reist jedes Byte vom Server zum Nutzer über halbe Kontinente — ineffizient und energieintensiv.</p>
+    </div>
+  </div>
+</section>
+
+<!-- CALCULATOR -->
+<div id="kalkulator">
+  <div class="inner">
+    <div class="section-label">// CO₂ Kalkulator</div>
+    <h2 class="section-title">Berechne deinen<br>Website-Schaden</h2>
+    <p style="color:var(--gray); max-width:560px; font-size:15px; line-height:1.7; margin-bottom:8px;">
+      Gib deine Website-Parameter ein. Der Kalkulator zeigt dir, wie viel CO₂ deine Website jährlich verursacht — und wo die größten Hebel liegen.
+    </p>
+
+    <div class="calc-grid">
+      <!-- INPUTS -->
+      <div class="calc-form">
+
+        <!-- Regler 1 -->
+        <div class="input-group">
+          <div class="input-header">
+            <div class="input-label">
+              Besucher pro Monat
+              <span id="val-visitors">10.000</span>
+            </div>
+            <div class="input-subline">Jeder Seitenaufruf bedeutet Server-Aktivität und Datenübertragung.</div>
+          </div>
+          <input type="range" id="visitors" min="1000" max="500000" step="1000" value="10000">
+          <div class="range-labels"><span>1.000</span><span>500.000</span></div>
+        </div>
+
+        <!-- Regler 2 -->
+        <div class="input-group">
+          <div class="input-header">
+            <div class="input-label">
+              Seitenaufrufe pro Besuch
+              <span id="val-pages">3.0</span>
+            </div>
+            <div class="input-subline">Wie tief tauchen Nutzer in deine Website ein? Mehr Klicks = mehr geladene Daten.</div>
+          </div>
+          <input type="range" id="pages" min="1" max="10" step="0.5" value="3">
+          <div class="range-labels"><span>1 Seite</span><span>10 Seiten</span></div>
+        </div>
+
+        <!-- Regler 3 -->
+        <div class="input-group">
+          <div class="input-header">
+            <div class="input-label">
+              Durchschnittliche Seitengröße (MB)
+              <span id="val-pagesize">2.5 MB</span>
+            </div>
+            <div class="input-subline">Der globale Durchschnitt liegt laut HTTP Archive bei 2,5 MB. Bilder und unkomprimierte Videos sind die größten Verursacher.</div>
+          </div>
+          <input type="range" id="pagesize" min="0.3" max="10" step="0.1" value="2.5">
+          <div class="range-labels"><span>0.3 MB</span><span>10 MB</span></div>
+        </div>
+
+        <!-- Regler 4 -->
+        <div class="input-group">
+          <div class="input-header">
+            <div class="input-label">
+              Anteil wiederkehrender Besucher
+              <span id="val-cache">30%</span>
+            </div>
+            <div class="input-subline">Dank Browser-Caching müssen wiederkehrende Nutzer nur ca. 2 % der ursprünglichen Datenmengen erneut herunterladen.</div>
+          </div>
+          <input type="range" id="cache" min="0" max="95" step="5" value="30">
+          <div class="range-labels"><span>0%</span><span>95%</span></div>
+        </div>
+
+        <!-- Regler 5 -->
+        <div class="input-group">
+          <div class="input-header">
+            <div class="input-label">
+              Tracking & Drittanbieter-Skripte
+              <span id="val-bloat">60%</span>
+            </div>
+            <div class="input-subline">Externe Skripte (Analytics, Werbung, Fonts) blockieren nicht nur das Rendering, sondern erzeugen ständige CPU-Last auf den Geräten (bis zu 30 % Overhead).</div>
+          </div>
+          <input type="range" id="bloat" min="0" max="90" step="5" value="60">
+          <div class="range-labels"><span>0%</span><span>90%</span></div>
+        </div>
+
+        <!-- Regler 6 -->
+        <div class="input-group">
+          <div class="input-header">
+            <div class="input-label">
+              Anteil an grünem Hosting
+              <span id="val-energy">50%</span>
+            </div>
+            <div class="input-subline">Rechenzentren machen 15 % der Emissionen aus. Ein Host mit 100 % Ökostrom reduziert diesen spezifischen CO₂-Anteil auf nahezu Null.</div>
+          </div>
+          <input type="range" id="energy" min="0" max="100" step="5" value="50">
+          <div class="range-labels"><span>0%</span><span>100%</span></div>
+        </div>
+
+        <!-- Regler 7 -->
+        <div class="input-group">
+          <div class="input-header">
+            <div class="input-label">
+              CO₂-Intensität Stromnetz (Standort)
+              <span id="val-seo">40%</span>
+            </div>
+            <div class="input-subline">Der globale Durchschnitt des Netzes liegt bei 442 g CO₂/kWh (Deutschland: ~385 g, Schweden: ~45 g). Bestimmt die Emissionen der Netzwerke und Endgeräte.</div>
+          </div>
+          <input type="range" id="seo" min="0" max="80" step="5" value="40">
+          <div class="range-labels"><span>0%</span><span>80%</span></div>
+        </div>
+
+      </div>
+
+      <!-- RESULTS BOX RIGHT -->
+      <div>
+        <div class="calc-result">
+          <div class="result-main">
+            <div class="result-label">GESCHÄTZTER FUSSABDRUCK</div>
+            <div class="result-value count-up" id="result-co2">—</div>
+            <div class="result-unit" id="result-unit">kg CO₂-Äquivalente pro Jahr</div>
+          </div>
+
+          <h3 class="comparison-headline">Das entspricht jährlich …</h3>
+          <div class="comparison-grid">
+            <div class="comp-box">
+              <span class="comp-box-icon">🚗</span>
+              <div class="comp-box-value" id="comp-car-box">—</div>
+              <div class="comp-box-label">Kilometer Autofahrt</div>
+            </div>
+            <div class="comp-box">
+              <span class="comp-box-icon">🌳</span>
+              <div class="comp-box-value" id="comp-tree-box">—</div>
+              <div class="comp-box-label">Bäume zur Kompensation</div>
+            </div>
+            <div class="comp-box">
+              <span class="comp-box-icon">📱</span>
+              <div class="comp-box-value" id="comp-phone-box">—</div>
+              <div class="comp-box-label">Smartphone-Ladungen</div>
+            </div>
+            <div class="comp-box">
+              <span class="comp-box-icon">✈️</span>
+              <div class="comp-box-value" id="comp-fly-box">—</div>
+              <div class="comp-box-label">Stundenflugzeit</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- OPTIMIZED COMPARISON -->
+    <div style="margin-top: 64px; border-top: 1px solid var(--ash); padding-top: 48px;">
+      <div class="section-label">// Potenzial</div>
+      <h3 style="font-family:'Bebas Neue',sans-serif; font-size: 36px; color:var(--cream); margin-bottom: 8px;">
+        So viel könntest du einsparen
+      </h3>
+      <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-top: 24px;" id="savings-grid">
+        <div style="background:var(--black); padding: 28px 24px; border: 1px solid var(--ash);">
+          <div style="font-family:'Space Mono',monospace; font-size:10px; letter-spacing:0.15em; color:var(--gray); margin-bottom:8px; text-transform:uppercase;">Bilder optimiert</div>
+          <div style="font-family:'Bebas Neue',sans-serif; font-size:40px; color:var(--green);" id="save-images">—</div>
+          <div style="font-size:12px; color:var(--gray); margin-top:4px;">kg CO₂ gespart</div>
+        </div>
+        <div style="background:var(--black); padding: 28px 24px; border: 1px solid var(--ash);">
+          <div style="font-family:'Space Mono',monospace; font-size:10px; letter-spacing:0.15em; color:var(--gray); margin-bottom:8px; text-transform:uppercase;">Caching aktiviert</div>
+          <div style="font-family:'Bebas Neue',sans-serif; font-size:40px; color:var(--green);" id="save-cache">—</div>
+          <div style="font-size:12px; color:var(--gray); margin-top:4px;">kg CO₂ gespart</div>
+        </div>
+        <div style="background:var(--black); padding: 28px 24px; border: 1px solid var(--ash);">
+          <div style="font-family:'Space Mono',monospace; font-size:10px; letter-spacing:0.15em; color:var(--gray); margin-bottom:8px; text-transform:uppercase;">Code bereinigt</div>
+          <div style="font-family:'Bebas Neue',sans-serif; font-size:40px; color:var(--green);" id="save-code">—</div>
+          <div style="font-size:12px; color:var(--gray); margin-top:4px;">kg CO₂ gespart</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- GOOD VS BAD -->
+<section>
+  <div class="section-label">// Gut vs. Schlecht</div>
+  <h2 class="section-title">Der Unterschied<br>macht's</h2>
+  <div class="comparison-table">
+    <!-- Spalte Schlechte Website -->
+    <div class="ct-column">
+      <div class="ct-header bad">❌ Schlechte Website</div>
+      <div class="ct-row bad">Bilder: 3–5 MB unkomprimiert (JPEG/PNG)</div>
+      <div class="ct-row bad">Kein Caching — jede Seite wird neu geladen</div>
+      <div class="ct-row bad">1.2 MB+ ungenutztes JavaScript</div>
+      <div class="ct-row bad">Duplicate Content, broken Links, keine Sitemap</div>
+      <div class="ct-row bad">Ladezeit: 6–12 Sekunden</div>
+      <div class="ct-row bad">Hosting auf konventionellem Strom</div>
+      <div class="ct-row bad">CO₂: 5–12g pro Seitenaufruf</div>
+    </div>
+
+    <!-- Spalte Optimierte Website -->
+    <div class="ct-column">
+      <div class="ct-header good">✅ Optimierte Website</div>
+      <div class="ct-row good">Bilder: 200–500 KB (WebP + Lazy Load)</div>
+      <div class="ct-row good">Aggressives Browser + CDN Caching</div>
+      <div class="ct-row good">< 100 KB minifiziertes, tree-geshaktes JS</div>
+      <div class="ct-row good">Strukturiertes SEO — Crawler-Effizienz 95%+</div>
+      <div class="ct-row good">Ladezeit: < 2 Sekunden (Core Web Vitals A)</div>
+      <div class="ct-row good">Grünes Hosting (Hetzner, IONOS Green)</div>
+      <div class="ct-row good">CO₂: 0.2–0.5g pro Seitenaufruf</div>
+    </div>
+  </div>
+</section>
+
+<!-- MANIFESTO -->
+<div class="manifesto-section" style="z-index:1; position:relative;">
+  <p class="manifesto-text">
+    Das Internet könnte bis 2030 für <span class="highlight">14% aller globalen CO₂-Emissionen</span> verantwortlich sein. Jede schlecht gebaute Website trägt dazu bei.
+  </p>
+  <p class="manifesto-sub">
+    Performance und Nachhaltigkeit sind kein Widerspruch. Eine schnelle Website ist eine grüne Website. 
+    Sauberer Code ist verantwortungsvoller Code.
+  </p>
+</div>
+
+<!-- CTA -->
+<div class="cta-section">
+  <h2>Zeit für<br>Veränderung.</h2>
+  <p>Lass deine Website analysieren und erfahre, wo die größten Einsparungspotenziale liegen.</p>
+  <a href="#kalkulator" class="cta-btn">▲ Zurück zum Kalkulator</a>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <p>WEBCARBON CALCULATOR — Berechnungsgrundlage: Website Carbon v3 Methodology, IEA 2023, Sustainable Web Design Model</p>
+  <p style="margin-top:8px; color: #333;">CO₂-Faktor: 0.494 kg CO₂/kWh · Datentransfer-Faktor: 0.81 kWh/GB · Quelle: websitecarbon.com</p>
+</footer>
+
+<script>
+// === SMOKE PARTICLES ===
+const canvas = document.getElementById('smokeCanvas');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+window.addEventListener('resize', () => {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+});
+
+const particles = [];
+class Particle {
+  constructor() { this.reset(); }
+  reset() {
+    this.x = Math.random() * canvas.width;
+    this.y = canvas.height + 20;
+    this.size = Math.random() * 40 + 10;
+    this.speed = Math.random() * 0.4 + 0.1;
+    this.opacity = Math.random() * 0.08 + 0.02;
+    this.drift = (Math.random() - 0.5) * 0.3;
+    this.wobble = Math.random() * Math.PI * 2;
+    this.wobbleSpeed = (Math.random() - 0.5) * 0.01;
+  }
+  update() {
+    this.y -= this.speed;
+    this.wobble += this.wobbleSpeed;
+    this.x += Math.sin(this.wobble) * 0.5 + this.drift;
+    this.size += 0.05;
+    this.opacity -= 0.0003;
+    if (this.y < -this.size || this.opacity <= 0) this.reset();
+  }
+  draw() {
+    ctx.beginPath();
+    const grad = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.size);
+    grad.addColorStop(0, `rgba(200,120,60,${this.opacity})`);
+    grad.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = grad;
+    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+    ctx.fill();
+  }
+}
+
+for (let i = 0; i < 60; i++) {
+  const p = new Particle();
+  p.y = Math.random() * canvas.height;
+  particles.push(p);
+}
+
+function animateSmoke() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  particles.forEach(p => { p.update(); p.draw(); });
+  requestAnimationFrame(animateSmoke);
+}
+animateSmoke();
+
+// === CALCULATOR ===
+const sliders = ['visitors', 'pagesize', 'pages', 'energy', 'cache', 'bloat', 'seo'];
+
+function fmtDe(n) {
+  return n.toLocaleString('de-DE', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+}
+
+function fmtDeInt(n) {
+  return Math.round(n).toLocaleString('de-DE');
+}
+
+function fmtNum(n) {
+  if (n >= 1000000) return (n/1000000).toFixed(1) + ' Mio.';
+  if (n >= 1000) return (n/1000).toFixed(0) + '.000';
+  return Math.round(n).toString();
+}
+
+function calculate() {
+  const visitors = +document.getElementById('visitors').value;
+  const pagesize = +document.getElementById('pagesize').value; // MB
+  const pages = +document.getElementById('pages').value;
+  const energy = +document.getElementById('energy').value / 100; // 0-1
+  const cache = +document.getElementById('cache').value / 100;
+  const bloat = +document.getElementById('bloat').value / 100;
+  const seo = +document.getElementById('seo').value / 100;
+
+  // Update display values
+  document.getElementById('val-visitors').textContent = fmtNum(visitors);
+  document.getElementById('val-pagesize').textContent = pagesize.toFixed(1) + ' MB';
+  document.getElementById('val-pages').textContent = pages.toFixed(1);
+  document.getElementById('val-energy').textContent = Math.round(energy * 100) + '%';
+  document.getElementById('val-cache').textContent = Math.round(cache * 100) + '%';
+  document.getElementById('val-bloat').textContent = Math.round(bloat * 100) + '%';
+  document.getElementById('val-seo').textContent = Math.round(seo * 100) + '%';
+
+  // CO2 CALCULATION
+  const CO2_PER_KWH = 0.494; // kg CO2/kWh
+  const ENERGY_GREEN_FACTOR = 1 - (energy * 0.7); 
+  const KWH_PER_GB = 0.81;
+
+  const yearlyVisits = visitors * 12;
+  const totalPages = yearlyVisits * pages;
+
+  const effectivePageSize = pagesize * (1 + bloat * 0.5) * (1 - cache * 0.6);
+  const dataTransferGB = (totalPages * effectivePageSize) / 1024;
+
+  const co2Transfer = dataTransferGB * KWH_PER_GB * CO2_PER_KWH * ENERGY_GREEN_FACTOR * 1000; 
+
+  const serverFactor = 0.02; 
+  const co2Server = (totalPages / 1000) * serverFactor * CO2_PER_KWH * ENERGY_GREEN_FACTOR * 1000;
+
+  const co2Bloat = co2Transfer * bloat * 0.3;
+
+  const crawlerRequests = totalPages * seo * 2;
+  const co2Seo = (crawlerRequests / 1000) * serverFactor * CO2_PER_KWH * ENERGY_GREEN_FACTOR * 1000;
+
+  const totalCO2 = co2Transfer + co2Server + co2Bloat + co2Seo;
+
+  // Display Main Result Box
+  document.getElementById('result-co2').textContent = fmtDe(totalCO2);
+  document.getElementById('result-unit').textContent = 'kg CO₂-Äquivalente pro Jahr';
+
+  // Update 4 Comparison Boxes
+  document.getElementById('comp-car-box').textContent = fmtDeInt(totalCO2 / 0.16);     // 0.16 kg CO2 pro km
+  document.getElementById('comp-tree-box').textContent = fmtDeInt(totalCO2 / 22.0);    // 22 kg Kompensation pro Baum
+  document.getElementById('comp-phone-box').textContent = fmtDeInt(totalCO2 / 0.008);  // 0.008 kg pro Ladung
+  document.getElementById('comp-fly-box').textContent = fmtDeInt(totalCO2 / 250.0);   // ~250 kg pro Flugstunde
+
+  // SAVINGS
+  const co2WithOptimizedImages = (() => {
+    const newSize = Math.min(pagesize, 0.5);
+    const newTransfer = ((yearlyVisits * pages * newSize * (1 + bloat*0.5) * (1 - cache*0.6)) / 1024) * KWH_PER_GB * CO2_PER_KWH * ENERGY_GREEN_FACTOR * 1000;
+    return co2Transfer - newTransfer;
+  })();
+
+  const co2WithBetterCache = (() => {
+    const newCache = 0.9;
+    const newTransfer = ((totalPages * pagesize * (1 + bloat*0.5) * (1 - newCache*0.6)) / 1024) * KWH_PER_GB * CO2_PER_KWH * ENERGY_GREEN_FACTOR * 1000;
+    return co2Transfer - newTransfer;
+  })();
+
+  const co2WithCleanCode = co2Bloat * 0.9;
+
+  document.getElementById('save-images').textContent = Math.max(0, co2WithOptimizedImages).toFixed(1);
+  document.getElementById('save-cache').textContent = Math.max(0, co2WithBetterCache).toFixed(1);
+  document.getElementById('save-code').textContent = Math.max(0, co2WithCleanCode).toFixed(1);
+}
+
+sliders.forEach(id => {
+  document.getElementById(id).addEventListener('input', calculate);
+});
+
+// Initial calculation
+calculate();
+</script>
+</body>
+</html>
