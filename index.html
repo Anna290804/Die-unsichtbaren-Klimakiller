@@ -1082,7 +1082,7 @@ function calculate() {
   document.getElementById('val-bloat').textContent = Math.round(bloat * 100) + '%';
   document.getElementById('val-seo').textContent = Math.round(seo * 100) + '%';
 
-  // CO2 CALCULATION
+// CO2 CALCULATION
   const CO2_PER_KWH = 0.494; // kg CO2/kWh
   const ENERGY_GREEN_FACTOR = 1 - (energy * 0.7); 
   const KWH_PER_GB = 0.81;
@@ -1093,15 +1093,16 @@ function calculate() {
   const effectivePageSize = pagesize * (1 + bloat * 0.5) * (1 - cache * 0.6);
   const dataTransferGB = (totalPages * effectivePageSize) / 1024;
 
-  const co2Transfer = dataTransferGB * KWH_PER_GB * CO2_PER_KWH * ENERGY_GREEN_FACTOR * 1000; 
+  // FEHLER BEHOBEN: Das "* 1000" am Ende wurde überall entfernt, da das Ergebnis bereits in kg ist.
+  const co2Transfer = dataTransferGB * KWH_PER_GB * CO2_PER_KWH * ENERGY_GREEN_FACTOR; 
 
   const serverFactor = 0.02; 
-  const co2Server = (totalPages / 1000) * serverFactor * CO2_PER_KWH * ENERGY_GREEN_FACTOR * 1000;
+  const co2Server = (totalPages / 1000) * serverFactor * CO2_PER_KWH * ENERGY_GREEN_FACTOR;
 
   const co2Bloat = co2Transfer * bloat * 0.3;
 
   const crawlerRequests = totalPages * seo * 2;
-  const co2Seo = (crawlerRequests / 1000) * serverFactor * CO2_PER_KWH * ENERGY_GREEN_FACTOR * 1000;
+  const co2Seo = (crawlerRequests / 1000) * serverFactor * CO2_PER_KWH * ENERGY_GREEN_FACTOR;
 
   const totalCO2 = co2Transfer + co2Server + co2Bloat + co2Seo;
 
@@ -1110,29 +1111,32 @@ function calculate() {
   document.getElementById('result-unit').textContent = 'kg CO₂-Äquivalente pro Jahr';
 
   // Update 4 Comparison Boxes
-  document.getElementById('comp-car-box').textContent = fmtDeInt(totalCO2 / 0.16);     // 0.16 kg CO2 pro km
-  document.getElementById('comp-tree-box').textContent = fmtDeInt(totalCO2 / 22.0);    // 22 kg Kompensation pro Baum
-  document.getElementById('comp-phone-box').textContent = fmtDeInt(totalCO2 / 0.008);  // 0.008 kg pro Ladung
-  document.getElementById('comp-fly-box').textContent = fmtDeInt(totalCO2 / 250.0);   // ~250 kg pro Flugstunde
+  document.getElementById('comp-car-box').textContent = fmtDeInt(totalCO2 / 0.16);     
+  document.getElementById('comp-tree-box').textContent = fmtDeInt(totalCO2 / 22.0);    
+  document.getElementById('comp-phone-box').textContent = fmtDeInt(totalCO2 / 0.008);  
+  document.getElementById('comp-fly-box').textContent = fmtDeInt(totalCO2 / 250.0);   
 
   // SAVINGS
   const co2WithOptimizedImages = (() => {
     const newSize = Math.min(pagesize, 0.5);
-    const newTransfer = ((yearlyVisits * pages * newSize * (1 + bloat*0.5) * (1 - cache*0.6)) / 1024) * KWH_PER_GB * CO2_PER_KWH * ENERGY_GREEN_FACTOR * 1000;
+    // FEHLER BEHOBEN: Auch hier das "* 1000" entfernt
+    const newTransfer = ((yearlyVisits * pages * newSize * (1 + bloat*0.5) * (1 - cache*0.6)) / 1024) * KWH_PER_GB * CO2_PER_KWH * ENERGY_GREEN_FACTOR;
     return co2Transfer - newTransfer;
   })();
 
   const co2WithBetterCache = (() => {
     const newCache = 0.9;
-    const newTransfer = ((totalPages * pagesize * (1 + bloat*0.5) * (1 - newCache*0.6)) / 1024) * KWH_PER_GB * CO2_PER_KWH * ENERGY_GREEN_FACTOR * 1000;
+    // FEHLER BEHOBEN: Auch hier das "* 1000" entfernt
+    const newTransfer = ((totalPages * pagesize * (1 + bloat*0.5) * (1 - newCache*0.6)) / 1024) * KWH_PER_GB * CO2_PER_KWH * ENERGY_GREEN_FACTOR;
     return co2Transfer - newTransfer;
   })();
 
   const co2WithCleanCode = co2Bloat * 0.9;
 
-  document.getElementById('save-images').textContent = Math.max(0, co2WithOptimizedImages).toFixed(1);
-  document.getElementById('save-cache').textContent = Math.max(0, co2WithBetterCache).toFixed(1);
-  document.getElementById('save-code').textContent = Math.max(0, co2WithCleanCode).toFixed(1);
+  // FORMATIERUNGS-FEHLER BEHOBEN: toFixed(1) wurde durch die korrekte fmtDe() Funktion ersetzt
+  document.getElementById('save-images').textContent = fmtDe(Math.max(0, co2WithOptimizedImages));
+  document.getElementById('save-cache').textContent = fmtDe(Math.max(0, co2WithBetterCache));
+  document.getElementById('save-code').textContent = fmtDe(Math.max(0, co2WithCleanCode));
 }
 
 sliders.forEach(id => {
